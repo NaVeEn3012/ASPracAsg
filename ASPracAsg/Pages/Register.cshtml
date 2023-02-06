@@ -1,0 +1,277 @@
+﻿@page
+@model ASPracAsg.Pages.RegisterModel
+@{
+	ViewData["Title"] = "Register";
+}
+<form method="post" enctype="multipart/form-data" id="fmLogin" onsubmit="return validateForm()>
+<div class="container mt-5">
+
+	<div class="row justify-content-center align-items-center">
+
+			<h1 class="mb-3">Register </h1>
+
+
+				<div asp-validation-summary="All" class="text-danger"></div>
+				<div class="row" >
+					<div class="col-md-8">
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.FullName">Full Name: </label>
+							<div class="col-sm-10">
+								<input type="Text" asp-for="RModel.FullName" class="form-control" id="name" required/>
+							</div>
+							<span asp-validaton-for="RModel.FullName" class="text-danger"></span>
+							<p id="InvalidName" class="text-danger mt-2">Full Name should not contain special characters and numbers</p>
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.CreditCardNo">Credit Card Number: </label>
+							<div class="col-sm-10">
+								<input type="Number" asp-for="RModel.CreditCardNo" class="form-control" id="card" inputmode="numeric" required />
+							</div>
+							<span asp-validaton-for="RModel.CreditCardNo" class="text-danger"></span>
+							<p id="InvalidCard" class="text-danger mt-2">Invalid Credit Card Number</p>
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.Gender">Gender: </label>
+							<div class="col-sm-10 d-flex align-items-center">
+								<div class="form-check form-check-inline">
+									@Html.RadioButtonFor(m => m.RModel.Gender, "M", new {@class = "form-check-input", name="yesno"})
+									<label class="form-check-label">Male</label>
+								</div>
+								<div class="form-check form-check-inline">
+									@Html.RadioButtonFor(m => m.RModel.Gender, "F", new {@class = "form-check-input", name="yesno"})
+								<label class="form-check-label">Female</label>
+								</div>
+							</div>
+							<span asp-validaton-for="RModel.Gender" class="text-danger"></span>
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.MobileNo">Mobile Number: </label>
+							<div class="col-sm-10">
+								<input type="Text" asp-for="RModel.MobileNo" class="form-control" id="mnumber" required />
+							</div>
+							<span asp-validaton-for="RModel.MobileNo" class="text-danger"></span>
+							<p id="InvalidNumber" class="text-danger mt-2">Invalid Phone Number</p>
+
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.DeliveryAddress">Delivery Address: </label>
+							<div class="col-sm-10">
+								<input type="Text" asp-for="RModel.DeliveryAddress" class="form-control" required/>
+							</div>
+							<span asp-validaton-for="RModel.DeliveryAddress" class="text-danger"></span>
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.Email">Email: </label>
+							<div class="col-sm-10">
+									<input type="email" asp-for="RModel.Email" class="form-control"/>
+							</div>
+							<span asp-validaton-for="RModel.Email" class="text-danger"></span>
+						</div>
+
+						<div class="row mb-3">
+							<div id="pswd_info" style="margin-top:40px; margin-bottom:30px;">
+								<h5 id="header">Password requirements:</h5>
+								<ul>
+									<li id="letter" class="fa-warning"> At least <strong>one letter</strong></li>
+									<li id="capital"> At least <strong>one capital letter</strong></li>
+									<li id="number"> At least <strong>one number</strong></li>
+									<li id="special"> At least <strong>one special character</strong></li>
+									<li id="length"> Be at least <strong>12 characters</strong></li>
+									<li id="password"> Must contains at least <strong>12 characters</strong>, specials chars (#$!...) and numbers</li>
+								</ul>
+							</div>
+							<label class="col-sm-2 col-form-label" asp-for="RModel.Password">Password: </label>
+							<div class="col-sm-10">
+								<input type="Password" asp-for="RModel.Password" class="form-control" id="Password" required />
+							</div>
+							<span asp-validaton-for="RModel.Password" class="text-danger"></span>
+						</div>
+
+						<div class="row mb-3 mt-2">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.ConfirmPassword">Confirm Password: </label>
+							<div class="col-sm-10">
+								<input type="Password" asp-for="RModel.ConfirmPassword" class="form-control" id="cPassword" required/>
+							</div>
+							<span asp-validaton-for="RModel.ConfirmPassword" class="text-danger"></span>
+							<p id="InvalidCPassword" class="text-danger mt-2">Passwords do not match each other</p>
+
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label" asp-for="RModel.AboutMe">About Me: </label>
+							<div class="col-sm-10">
+								<textarea rows="4" cols="50"  asp-for="RModel.AboutMe" class="form-control"  required></textarea>
+							</div>
+							<span asp-validaton-for="RModel.AboutMe" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="row mb-3">
+							<input type="file" accept="image/*" asp-for="RModel.Photo" class="form-control" onchange="showImgPreview(this)"/>
+							<span asp-validaton-for="RModel.Photo" class="text-danger"></span>
+						</div>
+						<img id="imgPreview" style="height:200px;width:200px;object-fit:cover; border: 3px solid #CED4DA;" src="/uploads/user.png" />
+						</div>
+					</div>
+
+				</div>
+
+				<div class="form-group mb-3">
+					<button class="btn btn-primary" type="submit">
+						Register
+					</button>
+				</div>
+	</div>
+</div>
+</form>
+
+
+<script>
+    function showImgPreview(input) {
+        if (input.files[0]) {
+            var uploadimg = new FileReader();
+            uploadimg.onload = function(displayimg) {
+                $("#imgPreview").attr('src', displayimg.target.result);
+            }
+            uploadimg.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script>
+
+	var pw1 = document.getElementById("Password");
+	$(document).ready(function () {
+		$("#InvalidCard").hide()
+		$("#card").keyup(function () {
+			var cardNo = $(this).val();
+			console.log(cardNo)
+			if(cardNo.toString().length == 15){
+				$("#InvalidCard").hide()
+			}else{
+				$("#InvalidCard").show()
+			}
+		})
+		$("#Password").keyup(function () {
+			// set password variable
+			var pswd = $(this).val();
+			//validate the length
+			if (pswd.length < 12) {
+				$('#length').show()
+			} else {
+				$('#length').hide()
+			}
+			//validate letter
+			if (pswd.match(/[A-z]/)) {
+				$('#letter').hide()
+			} else {
+				$('#letter').show()
+			}
+			//validate capital letter
+			if (pswd.match(/[A-Z]/)) {
+				$('#capital').hide()
+			} else {
+				$('#capital').show()
+			}
+			//validate number
+			if (pswd.match(/\d/)) {
+				$('#number').hide()
+			} else {
+				$('#number').show()
+			}
+			//validate special character
+			if (pswd.match(/[!@@#$ %^&*]/)) {
+				$('#special').hide()
+			} else {
+				$('#special').show()
+			}
+			if (pswd.match(/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])|(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[^a-zA-Z0-9])|(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])|(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])).{12,}$/)) {
+				$("#header").hide()
+				$("#password").hide()
+				$("#Password").css("border-color", "green")
+				$("#Password").css("box-shadow", "green")
+			} else {
+				$("#header").show()
+				$("#password").show()
+				$("#Password").css("border-color", "red")
+			}
+		});
+		$("#InvalidName").hide()
+		$("#name").keyup(function () {
+			var nameNo = $(this).val();
+			if (nameNo.match(/^[A-Z]+$/i)) {
+				$("#InvalidName").hide()
+			}else{
+				$("#InvalidName").show()
+			}
+		});
+		$("#InvalidNumber").hide()
+		$("#mnumber").keyup(function () {
+			var mNo = $(this).val();
+			if (mNo.match(/^[0-9]{8}$/)) {
+				$("#InvalidNumber").hide()
+			}else{
+				$("#InvalidNumber").show()
+			}
+		});
+		$("#InvalidCPassword").hide()
+		$("#cPassword").keyup(function () { 
+			var cInput = $(this).val();
+			if (cInput.match(pw1), x=>x[1]) {
+				$("#InvalidCPassword").hide()
+			}else{
+				$("#InvalidCPassword").show()
+			}
+		});
+	});
+</script>
+
+
+
+
+@section Scripts{
+	@{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+meter {
+  /* Reset the default appearance */
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+
+  margin: 0 auto 1em;
+  width: 100%;
+  height: 0.5em;
+
+  /* Applicable only to Firefox */
+  background: none;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+meter::-webkit-meter-bar {
+  background: none;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+meter[value="1"]::-webkit-meter-optimum-value { background: red; }
+meter[value="2"]::-webkit-meter-optimum-value { background: yellow; }
+meter[value="3"]::-webkit-meter-optimum-value { background: orange; }
+meter[value="4"]::-webkit-meter-optimum-value { background: green; }
+
+/* Gecko based browsers */
+meter[value="1"]::-moz-meter-bar { background: red; }
+meter[value="2"]::-moz-meter-bar { background: yellow; }
+meter[value="3"]::-moz-meter-bar { background: orange; }
+meter[value="4"]::-moz-meter-bar { background: green; }
+</style>

@@ -1,0 +1,73 @@
+﻿@page
+@using ASPracAsg.Model
+@using Microsoft.Extensions.Options
+@using AspNetCore.ReCaptcha;
+
+@model ASPracAsg.Pages.LoginModel
+@{
+	ViewData["Title"] = "Login";
+}
+@Html.ReCaptcha()
+
+
+<div class="container mt-5">
+
+	<div class="row justify-content-center align-items-center">
+
+		<div class="col-sm-12 col-md-12 col-lg-4">
+			<h1 class="mb-3">Login </h1>
+
+			<form method="post" id="fmLogin">
+						<div asp-validation-summary="All" class="text-danger"></div>
+
+						<div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+							<p class="lead fw-normal mb-0 me-3">Sign in with</p>
+							<a asp-area="" asp-controller="Account" asp-action="GoogleLogin" class="btn btn-primary btn-floating mx-1">
+								<i class="fa-brands fa-google"></i>
+							</a>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label" asp-for="LModel.Email">Email Address</label>
+							<input type="Text" asp-for="LModel.Email" class="form-control" />
+							<span asp-validaton-for="LModel.Email" class="text-danger"></span>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label" asp-for="LModel.Password">Password</label>
+							<input type="Password" asp-for="LModel.Password" class="form-control" />
+							<span asp-validaton-for="LModel.Password" class="text-danger"></span>
+						</div>
+				
+
+						<div class="mb-3 form-check">
+							<input type="checkbox" asp-for="LModel.RememberMe" class="form-check-input" />
+							<label class="form-check-label" asp-for="LModel.RememberMe">Remember Me?</label>
+						</div>
+
+						<recaptcha></recaptcha>
+
+						<div class="form-group mb-3">
+							<button class="btn btn-primary" type="submit">
+								Log in
+							</button>
+						</div>
+
+			</form>
+<a asp-page="/ForgetpasswordEmail">Forget Password</a>
+		</div>
+	</div>
+</div>
+
+
+
+
+			
+
+@section Scripts{
+	@{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+	<script src="https://kit.fontawesome.com/3336a4ae8e.js" crossorigin="anonymous"></script>
+
+}

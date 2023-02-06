@@ -1,0 +1,109 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@{
+    @if (User.Identity.IsAuthenticated)
+    {
+    <div class="container mt-5">
+
+        <div class="row justify-content-center align-items-center">
+
+        <h1 class="mb-3">Details </h1>
+        <div class="row mt-3">
+            <div class="col-md-8">
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.FullName">Full Name: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.FullName" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.CreditCardNo">Credit Card Number: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.CreditCardNo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.CreditCardNo_Decrypted">Decrypted Credit Card Number: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.CreditCardNo_Decrypted" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="Gender">Gender: </label>
+                <div class="col-sm-10">
+                @{ 
+                    if(@Model.Gender == "M")
+                    {
+                        <input type="Text" value="Male" class="form-control" readonly />
+                    }
+                    else
+                    {
+                        <input type="Text" value="Female" class="form-control" readonly />
+                    }
+                }
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.MobileNo">Mobile Number: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.MobileNo" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.DeliveryAddress">Delivery Address: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.DeliveryAddress" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.Email">Email: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.Email" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.Password">Encrypted Password: </label>
+                <div class="col-sm-10">
+                <input type="Text" asp-for="@Model.Password" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.AboutMe">About Me: </label>
+                <div class="col-sm-10">
+                <textarea rows="4" cols="50" asp-for="@Model.AboutMe" class="form-control" readonly></textarea>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-md-4">
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" asp-for="@Model.Photo">Photo: </label>
+                <div class="col-sm-10">
+                <img src="@(string.IsNullOrEmpty(@Model.Photo) ? "/uploads/user.png" : @Model.Photo)" onerror="this.src='/uploads/user.png'" style="height:200px;width:200px;object-fit:cover; border: 3px solid #CED4DA;" />
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h1 class="display-4">Welcome</h1>
+            <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        </div>
+    }
+}
