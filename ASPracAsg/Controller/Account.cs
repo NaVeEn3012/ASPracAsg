@@ -94,7 +94,7 @@ namespace FreshFarmMarket.Controllers
 			{
 				return Redirect("/Register");
 			}
-			// Obtain the user information
+
 			var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
 			if (signInResult.Succeeded)
 			{
@@ -138,9 +138,70 @@ namespace FreshFarmMarket.Controllers
 
 			}
 
-			// Use the user information for your application logic
+		}
+		public IActionResult FacebookLogin(string? returnUrl = null)
+		{
+			var redirectUrl = Url.Action(nameof(FacebookCallBack), "Account", new { returnUrl });
+			var properties = signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);
+			return Challenge(properties, "Facebook");
+		}
+		public async Task<IActionResult> FacebookCallBack(string? returnUrl = null, string? remoteError = null)
+		{
+			if (remoteError != null)
+			{
+				return Redirect("/Login");
+			}
 
-			// Redirect to the original URL
+			var info = await signInManager.GetExternalLoginInfoAsync();
+			Console.WriteLine(info);
+			if (info == null)
+			{
+				return Redirect("/Register");
+			}
+
+			var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+			if (signInResult.Succeeded)
+			{
+				var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
+				//AuditLog AModel = new AuditLog()
+				//{
+				//	userId = user.Id,
+				//	action = "Logged In",
+				//	timeStamp = DateTime.Now,
+				//};
+				//_authDbContext.AuditLogs.Add(AModel);
+				_authDbContext.SaveChanges();
+				HttpContext.Session.SetString("UserName", info.Principal.FindFirstValue(ClaimTypes.Email));
+				return Redirect("/Index");
+			}
+			else
+			{
+				var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+				var name = info.Principal.FindFirstValue(ClaimTypes.Name);
+				var pfp = info.Principal.FindFirstValue("image");
+				var user = await _userManager.FindByEmailAsync(email);
+				if (user == null)
+				{
+					user = new ApplicationUser
+					{
+						UserName = email,
+						Email = email,
+						PhotoURL = pfp,
+						PhoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone),
+						DeliveryAddress = info.Principal.FindFirstValue(ClaimTypes.StreetAddress),
+						PasswordAge = null,
+						FullName = name,
+						Gender = info.Principal.FindFirstValue(ClaimTypes.Gender)
+					};
+					return RedirectToPage("/Register", new { email = email, pfp = pfp });
+				}
+				await _userManager.AddLoginAsync(user, info);
+				await signInManager.SignInAsync(user, true);
+				HttpContext.Session.SetString("UserName", info.Principal.FindFirstValue(ClaimTypes.Email));
+				return Redirect("/Index");
+
+			}
+
 		}
 	}
 }

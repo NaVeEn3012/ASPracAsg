@@ -27,6 +27,7 @@ namespace ASPracAsg.Model
 
         [PersonalData]
         public string? AboutMe { get; set; }
+        public DateTimeOffset LastPasswordChanged { get; set; } = DateTimeOffset.UtcNow;
 
         public DateTime? PasswordAge { get; set; } = DateTime.Now;
     }

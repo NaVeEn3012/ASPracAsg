@@ -17,24 +17,19 @@ namespace ASPracAsg.Pages
         private SignInManager<ApplicationUser> signInManager { get; }
         private RoleManager<IdentityRole> roleManager { get; }
         private EmailSender _emailSender;
-        private readonly AuthDbContext _authDbContext;
+        private readonly AuditLogService _auditLogService;
 
         private IWebHostEnvironment _environment;
-        public RegisterModel(UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IWebHostEnvironment environment,
-        EmailSender emailSender,
-        AuthDbContext authDbContext,
-        RoleManager<IdentityRole> roleManager)
+        public RegisterModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, EmailSender emailSender, AuditLogService auditLogService, IWebHostEnvironment environment)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            _environment = environment;
-            _emailSender = emailSender;
-            _authDbContext = authDbContext;
             this.roleManager = roleManager;
-
+            _auditLogService = auditLogService;
+            _emailSender = emailSender;
+            _environment = environment;
         }
+
         [BindProperty]
         public Register RModel { get; set; } = new Register();
 
@@ -43,7 +38,6 @@ namespace ASPracAsg.Pages
             if (!string.IsNullOrWhiteSpace(email))
             {
                 RModel.Email = email;
-
             }
         }
 
@@ -52,12 +46,11 @@ namespace ASPracAsg.Pages
         {
             if (ModelState.IsValid)
             {
-                var Checkuser = await userManager.FindByEmailAsync(RModel.Email);
-                if (Checkuser != null)
+                var existingUser = await userManager.FindByEmailAsync(RModel.Email);
+                if (existingUser != null)
                 {
                     TempData["FlashMessage.Type"] = "danger";
-                    TempData["FlashMessage.Text"] = string.Format("{0} already exist",
-                    Checkuser);
+                    TempData["FlashMessage.Text"] = string.Format("{0} already exist", existingUser);
                     return Page();
                 }
 
@@ -77,6 +70,7 @@ namespace ASPracAsg.Pages
                     AboutMe = @HtmlEncoder.Default.Encode(RModel.AboutMe),
                     TwoFactorEnabled = true
                 };
+
                 if (RModel.Photo != null)
                 {
                     if (RModel.Photo.Length > 2 * 1024 * 1024)
@@ -96,19 +90,21 @@ namespace ASPracAsg.Pages
                 await userManager.AddToRoleAsync(user, "User");
                 if (result.Succeeded)
                 {
+                    await _auditLogService.LogAsync(user, "This user was created");
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmation = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token }, Request.Scheme);
 
                     await _emailSender.Execute("Account Verfication", confirmation!, RModel.Email);
-                    //await _auditLogService.LogAsync(user, "Register");
                     TempData["FlashMessage.Type"] = "success";
                     TempData["FlashMessage.Text"] = string.Format("Email has been sent for verification");
                     return Redirect("/");
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
+
             }
             return Page();
         }

@@ -51,6 +51,13 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClaimActions.MapJsonKey("image", "picture", "url");
     googleOptions.SaveTokens = true;
 });
+
+builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
+{
+    facebookOptions.AppId = configuration["Facebook:AppId"] ?? throw new Exception("The 'ClientId' is not configured");
+    facebookOptions.AppSecret = configuration["Facebook:AppSecret"] ?? throw new Exception("The 'ClientSecret' is not configured");
+});
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -68,6 +75,7 @@ builder.Host.ConfigureLogging(logging =>
 });
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<EmailSender>();
+builder.Services.AddScoped<AuditLogService>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddReCaptcha(builder.Configuration.GetSection("ReCaptcha"));

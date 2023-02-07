@@ -1,4 +1,5 @@
 using ASPracAsg.Model;
+using ASPracAsg.Services;
 using ASPracAsg.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,13 +12,13 @@ namespace ASPracAsg.Pages
 	{
 		private readonly SignInManager<ApplicationUser> signInManager;
 		private readonly UserManager<ApplicationUser> userManager;
-		private readonly AuthDbContext _context;
-		public LoginTwoStepModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger, AuthDbContext context)
+		private readonly AuditLogService _auditLogService;
+		public LoginTwoStepModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger, AuditLogService auditLogService)
 		{
 			this.signInManager = signInManager;
 			this.userManager = userManager;
 			_logger = logger;
-			_context = context;
+			_auditLogService = auditLogService;
 		}
 		private readonly ILogger<LoginModel> _logger;
 		[BindProperty]
@@ -41,12 +42,7 @@ namespace ASPracAsg.Pages
 				{
 					return RedirectToPage("/ChangePassword", new { email = email });
 				}
-
-				//AModel.userId = Emailuser.Id;
-				//AModel.action = "Logged In";
-				//AModel.timeStamp = DateTime.Now;
-				//_context.AuditLogs.Add(AModel);
-				//_context.SaveChanges();
+				await _auditLogService.LogAsync(Emailuser, "This user is logged in");
 				HttpContext.Session.SetString("UserName", Emailuser.Email);
 				return RedirectToPage("/Index");
 			}
