@@ -66,13 +66,13 @@ namespace ASPracAsg.Pages
 						return RedirectToPage("/ForgetPassword", new { code = code, username = user.UserName });
 					}
 
-					await _userManager.UpdateSecurityStampAsync(user);
+					//await _userManager.UpdateSecurityStampAsync(user);
+
 					HttpContext.Session.SetString("UserName", LModel.Email);
 					var userId = await _userManager.GetUserIdAsync(user);
 					await _userManager.ResetAccessFailedCountAsync(user);
 
 					await _auditLogService.LogAsync(user, "This user has Logged in");
-					await _userManager.UpdateSecurityStampAsync(user);
 					return RedirectToPage("/Index");
 				}
 

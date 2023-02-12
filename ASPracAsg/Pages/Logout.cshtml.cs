@@ -23,14 +23,6 @@ namespace ASPracAsg.Pages
 		{
 			HttpContext.Session.Remove("Username");
 			var userId = userManager.GetUserId(User);
-			//if (userId != null)
-			//{
-			//	AModel.userId = userId;
-			//	AModel.action = "Logged Out";
-			//	AModel.timeStamp = DateTime.Now;
-			//	_context.AuditLogs.Add(AModel);
-			//	_context.SaveChanges();
-			//}
 			await signInManager.SignOutAsync();
 			return RedirectToPage("Login");
 		}

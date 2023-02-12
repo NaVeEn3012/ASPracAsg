@@ -12,32 +12,46 @@ var builder = WebApplication.CreateBuilder(args);
 var provider = builder.Services.BuildServiceProvider();
 var configuration = provider.GetRequiredService<IConfiguration>();
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AllowAnonymousToPage("/ForgetPassword");
+    options.Conventions.AllowAnonymousToPage("/Login");
+    options.Conventions.AllowAnonymousToPage("/Register");
+    options.Conventions.AllowAnonymousToPage("/Index");
+    options.Conventions.AllowAnonymousToPage("/Error");
+    options.Conventions.AllowAnonymousToFolder("/Error");
+
+    options.Conventions.AuthorizePage("/Admin", "RequireAdministratorRole");
+
+});
+
 builder.Services.AddDbContext<AuthDbContext>();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-    options.Password.RequiredLength = 12;
-    options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireUppercase = true;
-    options.SignIn.RequireConfirmedAccount = true;
-    options.Lockout.AllowedForNewUsers = true;
+    options.Password.RequiredLength = 12;
+    options.Password.RequiredUniqueChars = 1;
+    options.User.RequireUniqueEmail = true;
+
     options.Lockout.MaxFailedAccessAttempts = 3;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(60);
 }).AddRoles<IdentityRole>().AddTokenProvider("MyApp", typeof(DataProtectorTokenProvider<ApplicationUser>)).AddEntityFrameworkStores<AuthDbContext>();
 
 builder.Services.ConfigureApplicationCookie(Config =>
 {
     Config.LoginPath = "/Login";
     Config.LogoutPath = "/Logout";
-    Config.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    Config.ExpireTimeSpan = TimeSpan.FromSeconds(15);
     Config.AccessDeniedPath = "/Errors/401";
+    Config.SlidingExpiration = true;
 });
 
 builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
-    options.ValidationInterval = TimeSpan.Zero;
+    options.ValidationInterval = TimeSpan.FromSeconds(10);
 });
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -59,11 +73,16 @@ builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
 });
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(1);
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
+
 builder.Services.AddSendGrid(options =>
     options.ApiKey = configuration["SendGrid"]
                      ?? throw new Exception("The 'SendGridApiKey' is not configured")
@@ -82,11 +101,9 @@ builder.Services.AddReCaptcha(builder.Configuration.GetSection("ReCaptcha"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseStatusCodePagesWithRedirects("/error/{0}");

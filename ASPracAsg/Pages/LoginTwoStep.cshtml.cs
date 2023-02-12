@@ -36,12 +36,13 @@ namespace ASPracAsg.Pages
 			Console.WriteLine(test.Succeeded);
 			if (test.Succeeded)
 			{
-				await signInManager.SignInAsync(Emailuser, false);
 				await userManager.ResetAccessFailedCountAsync(Emailuser);
 				if (DateTime.Now > Emailuser.PasswordAge.Value.AddMinutes(30))
 				{
 					return RedirectToPage("/ChangePassword", new { email = email });
 				}
+				await userManager.UpdateSecurityStampAsync(Emailuser);
+			
 				await _auditLogService.LogAsync(Emailuser, "This user is logged in");
 				HttpContext.Session.SetString("UserName", Emailuser.Email);
 				return RedirectToPage("/Index");

@@ -36,7 +36,7 @@ namespace ASPracAsg.Pages
 				var check = userManager.PasswordHasher.VerifyHashedPassword(user, oldpw, FPModel.Password);
 				if (check == PasswordVerificationResult.Success)
 				{
-					TempData["FlashMessage.Type"] = "error";
+					TempData["FlashMessage.Type"] = "danger";
 					TempData["FlashMessage.Text"] = "You already used this password before";
 					return Page();
 				}
@@ -58,8 +58,8 @@ namespace ASPracAsg.Pages
 				TempData["FlashMessage.Text"] = "Password changed successfully, please login.";
 				return Redirect("/Login");
 			}
-			TempData["FlashMessage.Type"] = "error";
-			TempData["FlashMessage.Text"] = "an error occurred";
+			TempData["FlashMessage.Type"] = "danger";
+			TempData["FlashMessage.Text"] = "An error occurred";
 			return Page();
 		}
 	}
